@@ -1,31 +1,44 @@
 <?php
-
-/*
-|--------------------------------------------------------------------------
-| Routes File
-|--------------------------------------------------------------------------
-|
-| Here is where you will register all of the routes in an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
-|
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
+use App\User;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
 |
-| This route group applies the "web" middleware group to every route
-| it contains. The "web" middleware group is defined in your HTTP
-| kernel and includes session state, CSRF protection, and more.
+| Here is where you can register all of the routes for an application.
+| It's a breeze. Simply tell Laravel the URIs it should respond to
+| and give it the controller to call when that URI is requested.
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
-    //
+//home 
+//Route::get('/home', 'HomeController@index');
+//Route::get('/home/{id}', 'HomeController@show');
+
+
+// Musics
+Route::get('/', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
+Route::get('/musics', ['middleware' => 'auth', 'uses' => 'MusicController@index']);
+Route::get('/music/suggest', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
+Route::post('/save-suggestion', ['middleware' => 'auth', 'uses' => 'MusicController@store']);
+
+Route::get("/CreateDefaultCredential", function(){
+    return User::create([
+           'firstname' => 'Pier-Luc',
+           'lastname' => 'audet',
+           'username' => 'poudigne',
+           'country' => 'Canada',
+           'city' => 'Montréal',
+           'age' => 27,
+           'sexe' => 'm',
+           'email' => 'shenrok@lcdj.com',
+           'password' => bcrypt('test123')
+       ]);
 });
+//login 
+Route::get('/auth/login','Auth\AuthController@getLogin');
+Route::post('/auth/login','Auth\AuthController@postLogin');
+
+//register
+// Route::get('/auth/register', 'Auth\AuthController@getRegister');
+// Route::post('/auth/register', 'Auth\AuthController@postRegister');

@@ -79,6 +79,11 @@ return [
             'region'    => 'IAD',
             'url_type'  => 'publicURL',
         ],
+        
+        'media' => [
+            'driver' => 'local',
+            'root'   => public_path().'/media',
+        ],
 
     ],
 

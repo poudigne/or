@@ -25,3 +25,66 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ### License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+
+## Third party API
+
+### Laravel Medialibrary
+
+```
+composer require spatie/laravel-medialibrary
+```
+https://github.com/spatie/laravel-medialibrary
+
+### Whoops
+
+```
+> composer require filp/whoops
+```
+Edit app/Exceptions/Handler.php so the function render() looks like this
+```
+public function render($request, Exception $e)
+{
+	if (config('app.debug'))
+	{
+		return $this->renderExceptionWithWhoops($e);
+	}
+
+	return parent::render($request, $e);
+}
+```
+
+Then add this function to **app/Exceptions/Handler.php***
+
+```
+ /**
+	* Render an exception using Whoops.
+	* 
+	* @param  \Exception $e
+	* @return \Illuminate\Http\Response
+	*/
+protected function renderExceptionWithWhoops(Exception $e)
+{
+	$whoops = new \Whoops\Run;
+	$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+
+	return new \Illuminate\Http\Response(
+		$whoops->handleException($e),
+		$e->getStatusCode(),
+		$e->getHeaders()
+	);
+}
+```
+
+## Troubleshoot homestead
+
+```
+> composer dump-autoload
+> composer update
+```
+
+Or in last resort
+
+``` 
+> composer dump-autoload
+> composer install
+```
