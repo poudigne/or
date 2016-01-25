@@ -29,6 +29,7 @@ class InitialDesign extends Migration
             $table->string('band');
             $table->smallInteger('is_accepted')->nullable();
             $table->string('reason')->nullable();
+            $table->string('path');
             $table->timestamps();
             $table->softDeletes();
         });

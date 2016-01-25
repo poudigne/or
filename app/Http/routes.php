@@ -15,12 +15,15 @@ use App\User;
 //Route::get('/home', 'HomeController@index');
 //Route::get('/home/{id}', 'HomeController@show');
 
+Route::get('/phpinfo', function() { phpinfo(); });
 
 // Musics
 Route::get('/', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
 Route::get('/musics', ['middleware' => 'auth', 'uses' => 'MusicController@index']);
 Route::get('/music/suggest', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
+
 Route::post('/save-suggestion', ['middleware' => 'auth', 'uses' => 'MusicController@store']);
+Route::post('/accept-song', ['middleware' => 'auth', 'uses' => 'MusicController@accept_songs']);
 
 Route::get("/CreateDefaultCredential", function(){
     return User::create([
@@ -38,6 +41,9 @@ Route::get("/CreateDefaultCredential", function(){
 //login 
 Route::get('/auth/login','Auth\AuthController@getLogin');
 Route::post('/auth/login','Auth\AuthController@postLogin');
+
+
+
 
 //register
 // Route::get('/auth/register', 'Auth\AuthController@getRegister');

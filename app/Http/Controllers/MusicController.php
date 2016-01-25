@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Auth;
+use Session;
 
 class MusicController extends Controller
 {
@@ -21,9 +22,10 @@ class MusicController extends Controller
     {
         $music = new Music;
         $musics = $music
-            ->select('musics.title', 'musics.is_accepted', 'musics.band','musics.id','musics.style_id', 'musics.reason')
+            ->select('musics.title', 'musics.is_accepted', 'musics.band','musics.id','musics.style_id', 'musics.reason','musics.path')
             ->get();
-        return view('musics')->with('musics', $musics);
+        $music_style = new MusicStyle;
+        return view('musics')->with('musics', $musics)->with('music_style', $music_style->get());
     }
 
     /**
@@ -46,23 +48,24 @@ class MusicController extends Controller
     public function store(Request $request)
     {
         $file = $request->file('song_file');
-        // if ($file->isValid()) {
-        //     if ($file->getClientOriginalExtension() != "*.mp3")
-        //         return view('suggestmusic')->with('success', "Bad file extension!")->with('MusicStyle', $music_style->get());
-        //     
+        $music_style = new MusicStyle;
+        
+        if ($file->isValid()) 
+        {
+            if ($file->getClientOriginalExtension() != "mp3")
+                return view('suggestmusic')->with('success', "Bad file extension!")->with('music_style', $music_style->get());
+        
+            $file->move("medias/", $file->getClientOriginalName());     
             $music = new Music;
             $music->title = $request->get('song_title');
             $music->band = $request->get('band_name');
             $music->style_id = $request->get('music_style');
             $music->user_id = Auth::id();
-            $music_style = new MusicStyle;
-            
-            
-            // $music->addMedia($file)->toCollection('images');
+            $music->path = $file->getClientOriginalName();
             $music->save();
-            return view('suggestmusic')->with('success', 0)->with('MusicStyle', $music_style->get());
-        // }
-        // return view('suggestmusic')->with('success', "Unknown error")->with('MusicStyle', $music_style->get());
+            return view('suggestmusic')->with('success', 0)->with('music_style', $music_style->get());
+        }
+        return view('suggestmusic')->with('success', "Unknown error")->with('music_style', $music_style->get());
     }
 
     /**
@@ -125,5 +128,17 @@ class MusicController extends Controller
         $music_styles = $music_style->get();
         return view('suggestmusic')->with('music_style', $music_styles);
         
+    }
+    
+    public function accept_songs(Request $request){
+        
+        foreach($request->music as $test){
+            $music = new Music;
+            $db_music = $music->get((int)$test['id']);
+            $db_music->style_id = $test['style'];
+            $db_music->is_accepted = $test['is_accepted'];
+            $db_music->reason = $test['reason'];
+            $db_music->save();
+        }
     }
 }
