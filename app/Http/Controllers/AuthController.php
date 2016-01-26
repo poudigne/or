@@ -10,5 +10,5 @@ use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Auth\AuthController
 {
- $loginPath = '/login';
+	$loginPath = '/login';
 }

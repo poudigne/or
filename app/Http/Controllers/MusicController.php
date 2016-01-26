@@ -56,7 +56,6 @@ class MusicController extends Controller
             if ($file->getClientOriginalExtension() != "mp3"){
                 return redirect()->route('suggest')->with('error', "Bad file extension!");
             }
-                // return view('suggestmusic')->with('error', "Bad file extension!")->with('music_style', $music_style->get());
             if (file_exists("medias/" . $file->getClientOriginalName()))
             {
                 return redirect()->route('suggest')->with('error', "File already uploaded!");
@@ -70,10 +69,8 @@ class MusicController extends Controller
             $music->path = $file->getClientOriginalName();
             $music->save();
             return redirect()->route('suggest')->with('error', "success");
-            // return view('suggestmusic')->with('error', 0)->with('music_style', $music_style->get());
         }
         return redirect()->route('suggest')->with('error', "Unknown error");
-        // return Route::get('suggest')view('suggestmusic')->with('error', "Unknown error")->with('music_style', $music_style->get());
     }
 
     /**

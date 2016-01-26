@@ -19,10 +19,17 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{{ isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email }}} <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Log out</a></li>
-          </ul>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          @if (Auth::check())  
+            {{ isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email }}
+            <span class="caret"></span>
+            <ul class="dropdown-menu">
+              <li><a href="{{ route('logout') }}" id="user-logout">Log out</a></li>
+            </ul>
+          @else
+            Log in
+          @endif
+          </a>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->

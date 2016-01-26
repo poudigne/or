@@ -22,11 +22,11 @@
   <thead>
     <tr>
       <th></th>
-      <th data-field="title">Title</th>
-      <th data-field="band">Band</th>
-      <th data-field="music_styles">style</th>
-      <th data-field="is_accepted">is accepted ?</th>
-      <th data-field="reasons">reasons</th>
+      <th data-field="title">Song title</th>
+      <th data-field="band">Band / Artiste</th>
+      <th data-field="music_styles">Style</th>
+      <th data-field="is_accepted">Accept ?</th>
+      <th data-field="reasons">Reason</th>
     </tr>
   </thead>
   <tbody>

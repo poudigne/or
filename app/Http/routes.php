@@ -39,8 +39,9 @@ Route::get("/CreateDefaultCredential", function(){
        ]);
 });
 //login 
-Route::get('/auth/login','Auth\AuthController@getLogin');
-Route::post('/auth/login','Auth\AuthController@postLogin');
+Route::get('/auth/login',   ['as' => 'get-login',  'uses' => 'Auth\AuthController@getLogin']);
+Route::post('/auth/login',  ['as' => 'post-login', 'uses' => 'Auth\AuthController@postLogin']);
+Route::get('/auth/logout',  ['as' => 'logout',     'uses' => function(){ if (Auth::check()) { Auth::logout(); return redirect()->route('suggest'); }  }]);
 
 
 
