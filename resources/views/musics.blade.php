@@ -32,7 +32,7 @@
   <tbody>
       
     @foreach ($musics as $set)
-      <tr class="music-row">
+      <tr class="music-row" songid="{{ $set->id }}">
         <td class="button-col">
             <div onclick="play_song('medias/{{ $set->path }}', {{ $set->id }})" id="music_id_{{ $set->id }}" class="play my-button">
             </div​>
@@ -113,7 +113,7 @@ $("#save-button").click(function(){
         if (accepted_value != "")
         {
             saveJson.push({
-                id:          $(this).find("#musicstyle")[0].value,
+                id:          $(this).attr('songid'),
                 style:       $(this).find("#musicstyle")[0].value,
                 is_accepted: $(this).find(".is_accepted")[0].value,
                 reason:      $(this).find(".inputSongReason").val()
@@ -123,14 +123,11 @@ $("#save-button").click(function(){
     });
     // send json via ajax to save it 
     $.ajax({
-        url: 'accept-song',
+        url: '{{ route('accept-song') }}',
         type: "post",
         data: { 
             "music"  : saveJson,
             "_token" : "{{ csrf_token() }}"
-        },
-        success: function(data) {
-            alert(data);
         }
     });   
 });
@@ -141,6 +138,7 @@ $().ready(function(){
    is_song_playing = false; 
    playing_song = '';
    current_song = null;
+   debug = null;
 });
 </script>
 

@@ -2,6 +2,7 @@
 <head>
 @include('meta')
 <body>
+
 	<!--<header>
 		<div class="row">
 			<ul id="slide-out" class="side-nav fixed">
@@ -13,6 +14,7 @@
 			<a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
 		</div>
 	</header>-->
+	@include('header')
 	<main>
 		<div class="container">
 			<div class='row'>

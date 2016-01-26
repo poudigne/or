@@ -18,12 +18,12 @@ use App\User;
 Route::get('/phpinfo', function() { phpinfo(); });
 
 // Musics
-Route::get('/', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
-Route::get('/musics', ['middleware' => 'auth', 'uses' => 'MusicController@index']);
-Route::get('/music/suggest', ['middleware' => 'auth', 'uses' => 'MusicController@suggest']);
+Route::get('/',               function(){ return redirect()->route('suggest'); });
+Route::get('/musics',         ['as' => 'musics',          'middleware' => 'auth', 'uses' => 'MusicController@index']);
+Route::get('/music/suggest',  ['as' => 'suggest',         'middleware' => 'auth', 'uses' => 'MusicController@suggest']);
 
-Route::post('/save-suggestion', ['middleware' => 'auth', 'uses' => 'MusicController@store']);
-Route::post('/accept-song', ['middleware' => 'auth', 'uses' => 'MusicController@accept_songs']);
+Route::post('/music/suggest', ['as' => 'save-suggestion', 'middleware' => 'auth', 'uses' => 'MusicController@store']);
+Route::post('/accept-song',   ['as' => 'accept-song',     'middleware' => 'auth', 'uses' => 'MusicController@accept_songs']);
 
 Route::get("/CreateDefaultCredential", function(){
     return User::create([

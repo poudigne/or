@@ -23,6 +23,7 @@ class MusicController extends Controller
         $music = new Music;
         $musics = $music
             ->select('musics.title', 'musics.is_accepted', 'musics.band','musics.id','musics.style_id', 'musics.reason','musics.path')
+            ->where('musics.is_accepted', null)
             ->get();
         $music_style = new MusicStyle;
         return view('musics')->with('musics', $musics)->with('music_style', $music_style->get());
@@ -52,9 +53,14 @@ class MusicController extends Controller
         
         if ($file->isValid()) 
         {
-            if ($file->getClientOriginalExtension() != "mp3")
-                return view('suggestmusic')->with('success', "Bad file extension!")->with('music_style', $music_style->get());
-        
+            if ($file->getClientOriginalExtension() != "mp3"){
+                return redirect()->route('suggest')->with('error', "Bad file extension!");
+            }
+                // return view('suggestmusic')->with('error', "Bad file extension!")->with('music_style', $music_style->get());
+            if (file_exists("medias/" . $file->getClientOriginalName()))
+            {
+                return redirect()->route('suggest')->with('error', "File already uploaded!");
+            }
             $file->move("medias/", $file->getClientOriginalName());     
             $music = new Music;
             $music->title = $request->get('song_title');
@@ -63,9 +69,11 @@ class MusicController extends Controller
             $music->user_id = Auth::id();
             $music->path = $file->getClientOriginalName();
             $music->save();
-            return view('suggestmusic')->with('success', 0)->with('music_style', $music_style->get());
+            return redirect()->route('suggest')->with('error', "success");
+            // return view('suggestmusic')->with('error', 0)->with('music_style', $music_style->get());
         }
-        return view('suggestmusic')->with('success', "Unknown error")->with('music_style', $music_style->get());
+        return redirect()->route('suggest')->with('error', "Unknown error");
+        // return Route::get('suggest')view('suggestmusic')->with('error', "Unknown error")->with('music_style', $music_style->get());
     }
 
     /**
@@ -133,8 +141,9 @@ class MusicController extends Controller
     public function accept_songs(Request $request){
         
         foreach($request->music as $test){
+            // dd($test);
             $music = new Music;
-            $db_music = $music->get((int)$test['id']);
+            $db_music = $music->find($test['id']);
             $db_music->style_id = $test['style'];
             $db_music->is_accepted = $test['is_accepted'];
             $db_music->reason = $test['reason'];
