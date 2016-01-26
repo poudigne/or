@@ -11,20 +11,26 @@
         @endforeach
     </ul>
 @endif
-<form method="post">
-        
-    <div class="form-group">
-            <label for="email">Username</label>
-            <input name="email" type="text" class="form-control" data-validation="required" placeHolder="email"/>
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <form method="post">
+                <div class="form-group">
+                        <label for="email">Username</label>
+                        <input name="email" type="text" class="form-control" data-validation="required email" placeHolder="email"/>
+                </div>
+                <div class="form-group">
+                        <label for="password">Password</label>
+                        <input name="password" type="password" class="form-control" data-validation="required" placeHolder="password"/>
+                </div>
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="form-group">
-            <label for="password">Password</label>
-            <input name="password" type="password" class="form-control" data-validation="required" placeHolder="password"/>
-    </div>
-    <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-    <div class="form-group">
-            <button type="submit" class="btn btn-primary">Log in</button>
-    </div>
-</form>
-@stop
+    <script type="text/javascript">
+
+        $.validate();
+    </script>
+@stop 

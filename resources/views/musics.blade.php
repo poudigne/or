@@ -3,17 +3,6 @@
 @section('title', 'Page Title')
 
 @section('content')
-@if (isset($deleted))
-  @if ($deleted == '1')
-    <script type="text/javascript">
-      Materialize.toast('Product successfuly deleted !', 4000);
-    </script>
-  @else
-    <script type="text/javascript">
-      Materialize.toast('Error has occured : {{ $deleted }}', 4000);
-    </script>
-  @endif
-@endif
 
 <h2 class="header">List of suggested songs</h2>
 <!--<a class="btn-floating disabled" href="/CreateProduct"><i class="small material-icons">add</i></a>-->
@@ -41,6 +30,7 @@
         <td class="text-col">{{ $set->band }}</td>
         <td class="style-col"> 
             <select id="musicstyle" name="music_style" class="form-control">
+                <option value="" @if ($set->style_id == "") selected @endif></option>
                 @foreach ($music_style as $style)
                     <option value="{{ $style->id }}" 
                         @if ($set->style_id == $style->id) 
@@ -128,8 +118,27 @@ $("#save-button").click(function(){
         data: { 
             "music"  : saveJson,
             "_token" : "{{ csrf_token() }}"
+        },
+        dataType: "json"
+
+    }).done(function(data) {
+        debug = data;
+        console.log(data);
+        toastr["success"]("Songs have been successfuly saved.","Success !");
+    }).fail(function(data) {
+        debug = data;
+        console.log(data);
+        toastr["error"]("{{ session('error') }}","Error !");
+    }).always(function(data) {
+        for(var id in data) {
+            var songId = data[id];
+            console.log(songId);
+            $(".music-row").each(function(){
+                if ($(this).attr('songid') == songId)
+                    $(this).remove();
+            });
         }
-    });   
+    }); 
 });
 /**************************
  * When document is ready *

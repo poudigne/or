@@ -26,7 +26,7 @@ class MusicController extends Controller
             ->where('musics.is_accepted', null)
             ->get();
         $music_style = new MusicStyle;
-        return view('musics')->with('musics', $musics)->with('music_style', $music_style->get());
+        return view('musics')->with('musics', $musics)->with('music_style', $music_style->orderBy('name')->get());
     }
 
     /**
@@ -37,7 +37,7 @@ class MusicController extends Controller
     public function create()
     {
         $music_style = new MusicStyle;
-        return view('suggestmusic')->with('music_style', $music_style->get());
+        return view('suggestmusic')->with('music_style', $music_style->orderBy('name')->get());
     }
 
     /**
@@ -50,7 +50,6 @@ class MusicController extends Controller
     {
         $file = $request->file('song_file');
         $music_style = new MusicStyle;
-        
         if ($file->isValid()) 
         {
             if ($file->getClientOriginalExtension() != "mp3"){
@@ -64,7 +63,7 @@ class MusicController extends Controller
             $music = new Music;
             $music->title = $request->get('song_title');
             $music->band = $request->get('band_name');
-            $music->style_id = $request->get('music_style');
+            $music->style_id = $request->get('music_style') != "" ? $request->get('music_style') : null ;
             $music->user_id = Auth::id();
             $music->path = $file->getClientOriginalName();
             $music->save();
@@ -122,7 +121,7 @@ class MusicController extends Controller
         ->select('products.title', 'products.description', 'products.price','products.id','categories.name')
         ->get();
         $music_style = new Category;
-        $music_styles = $category->get();
+        $music_styles = $category->orderBy('name')->get();
         return view('products')->with('products', $musics)->with('categories', $music_styles)->with('deleted', 1);
     }
     
@@ -130,21 +129,24 @@ class MusicController extends Controller
     public function suggest()
     {
         $music_style = new MusicStyle;
-        $music_styles = $music_style->get();
+        $music_styles = $music_style->orderBy('name')->get();
         return view('suggestmusic')->with('music_style', $music_styles);
         
     }
     
     public function accept_songs(Request $request){
-        
+        $arr = array();
+
         foreach($request->music as $test){
-            // dd($test);
             $music = new Music;
             $db_music = $music->find($test['id']);
-            $db_music->style_id = $test['style'];
+            $db_music->style_id = $test['style'] != "" ? $test['style'] : null;
             $db_music->is_accepted = $test['is_accepted'];
             $db_music->reason = $test['reason'];
             $db_music->save();
+            $arr[] = $test['id'];
         }
+
+        return json_encode($arr);
     }
 }

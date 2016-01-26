@@ -34,8 +34,8 @@ Route::get("/CreateDefaultCredential", function(){
            'city' => 'Montréal',
            'age' => 27,
            'sexe' => 'm',
-           'email' => 'shenrok@lcdj.com',
-           'password' => bcrypt('test123')
+           'email' => 'pierluc@organicradio.com',
+           'password' => bcrypt('admin321')
        ]);
 });
 //login 

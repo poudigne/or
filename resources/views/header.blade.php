@@ -21,7 +21,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
           @if (Auth::check())  
-            {{ isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email }}
+            {{ isset(Auth::user()->username) ? Auth::user()->username : Auth::user()->email }}
             <span class="caret"></span>
             <ul class="dropdown-menu">
               <li><a href="{{ route('logout') }}" id="user-logout">Log out</a></li>
