@@ -48,28 +48,44 @@ class MusicController extends Controller
      */
     public function store(Request $request)
     {
-        $file = $request->file('song_file');
+        $requestedSong = $this->GetUploadSongData($request->get('song_title'), $request->get('band_name'));
+        $returnMsg = "";
+        if ($requestedSong != null && $requestedSong->is_accepted == 1){
+            $returnMsg = "Congratulation, you've picked a song that has been approved already by Organic Radio";
+            return redirect()->route('suggest')->with('success', $returnMsg);
+        }
+        else if ($requestedSong != null && $requestedSong->is_accepted == 0){
+            $returnMsg = "Song already suggested but got rejected";
+            return redirect()->route('suggest')->with('error', $returnMsg);
+        }else if ($requestedSong != null && $requestedSong->is_accepted == null){
+            $returnMsg = "Song already suggested but is pending acceptance";
+            return redirect()->route('suggest')->with('error', $returnMsg);
+        }
+
+
+        if ($request->file('song_file') != null)
+            $file = $request->file('song_file');
         $music_style = new MusicStyle;
-        if ($file->isValid()) 
-        {
-            if ($file->getClientOriginalExtension() != "mp3"){
+        $musicPath = "";
+        if (isset($file) && $file->isValid()) {
+            if ($file->getClientOriginalExtension() != "mp3") {
                 return redirect()->route('suggest')->with('error', "Bad file extension!");
             }
-            if (file_exists("medias/" . $file->getClientOriginalName()))
-            {
-                return redirect()->route('suggest')->with('error', "File already uploaded!");
+            if (file_exists("medias/" . $file->getClientOriginalName())) {
+                return redirect()->route('suggest')->with('error', "File already exist.");
             }
-            $file->move("medias/", $file->getClientOriginalName());     
-            $music = new Music;
-            $music->title = $request->get('song_title');
-            $music->band = $request->get('band_name');
-            $music->style_id = $request->get('music_style') != "" ? $request->get('music_style') : null ;
-            $music->user_id = Auth::id();
-            $music->path = $file->getClientOriginalName();
-            $music->save();
-            return redirect()->route('suggest')->with('error', "success");
+            $musicPath = $file->getClientOriginalName();
+            $file->move("medias/", $file->getClientOriginalName());
         }
-        return redirect()->route('suggest')->with('error', "Unknown error");
+        $music = new Music;
+        $music->title = $request->get('song_title');
+        $music->band = $request->get('band_name');
+        $music->style_id = $request->get('music_style') != "" ? $request->get('music_style') : null ;
+        $music->user_id = Auth::id();
+        $music->path = $musicPath;
+
+        $music->save();
+        return redirect()->route('suggest')->with('success', "success");
     }
 
     /**
@@ -91,7 +107,8 @@ class MusicController extends Controller
      */
     public function edit($id)
     {
-        //
+        $music = Music::where('id',$id)->first();
+        return view('editsuggestmusic')->with('music_style', MusicStyle::get())->with("music", $music);
     }
 
     /**
@@ -103,7 +120,26 @@ class MusicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if ($request->file('song_file') != null)
+            $file = $request->file('song_file');
+        $music_style = new MusicStyle;
+        $musicPath = "";
+        if (isset($file) && $file->isValid()) {
+            if ($file->getClientOriginalExtension() != "mp3") {
+                return redirect()->route('suggest')->with('error', "Bad file extension!");
+            }
+            $musicPath = $file->getClientOriginalName();
+            $file->move("medias/", $file->getClientOriginalName());
+        }
+        $music = Music::find($id);
+        $music->title = $request->get('song_title');
+        $music->band = $request->get('band_name');
+        $music->style_id = $request->get('music_style') != "" ? $request->get('music_style') : null ;
+        $music->user_id = Auth::id();
+        $music->path = $musicPath;
+
+        $music->save();
+        return redirect()->route('musics.edit', $id)->with('success', "success");
     }
 
     /**
@@ -120,8 +156,8 @@ class MusicController extends Controller
         ->join('categories', 'products.category_id', '=', 'categories.id')
         ->select('products.title', 'products.description', 'products.price','products.id','categories.name')
         ->get();
-        $music_style = new Category;
-        $music_styles = $category->orderBy('name')->get();
+        $music_style = new Musicstyle;
+        $music_styles = $music_style->orderBy('name')->get();
         return view('products')->with('products', $musics)->with('categories', $music_styles)->with('deleted', 1);
     }
     
@@ -148,5 +184,11 @@ class MusicController extends Controller
         }
 
         return json_encode($arr);
+    }
+
+    private function GetUploadSongData($title, $band)
+    {
+        $song = Music::where('title','like','%'.$title.'%')->where('band','like','%'.$band.'%')->first();
+        return $song;
     }
 }

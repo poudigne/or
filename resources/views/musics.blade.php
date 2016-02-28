@@ -23,8 +23,13 @@
     @foreach ($musics as $set)
       <tr class="music-row" songid="{{ $set->id }}">
         <td class="button-col">
+            @if ($set->path != null)
             <div onclick="play_song('medias/{{ $set->path }}', {{ $set->id }})" id="music_id_{{ $set->id }}" class="play my-button">
             </div​>
+            @else
+                <button class="btn btn-primary btn-sm btn-edit" data-href="{{ route('musics.edit', $set->id) }}">Upload
+                </button>
+            @endif
         </td>
         <td class="text-col">{{ $set->title }}</td>
         <td class="text-col">{{ $set->band }}</td>
@@ -47,11 +52,11 @@
                 <option value="0" @if ( $set->is_accepted == 0 && $set->is_accepted != NULL) selected @endif>Reject</option>
             </select>
         </td>
-        <td><input type="text" class="inputSongReason form-control" id="inputSongReason-{{ $set->id }}" placeholder="Reason for rejecting the song" disabled></td>
+        <td><textarea type="text" class="inputSongReason form-control expand" id="inputSongReason-{{ $set->id }}" placeholder="Reason for rejecting the song" disabled> </textarea></td>
       </tr>
     @endforeach
   </tbody>
-</table>      
+</table>
 
 <script type="text/javascript">
 
@@ -92,6 +97,15 @@ $( ".is_accepted" ).change(function() {
         $("#inputSongReason-"+row_id).removeAttr("disabled");
     
 });
+
+$(".btn-edit").click(function() {
+    var link = $(this).attr('data-href');
+    window.location.href = link;
+});
+
+
+
+
 /*******************************
  * When save button is clicked *
  *******************************/
@@ -102,6 +116,7 @@ $("#save-button").click(function(){
         accepted_value = $(this).find(".is_accepted")[0].value;
         if (accepted_value != "")
         {
+            var input = $(this).find("input");
             saveJson.push({
                 id:          $(this).attr('songid'),
                 style:       $(this).find("#musicstyle")[0].value,
@@ -111,7 +126,7 @@ $("#save-button").click(function(){
         }
         
     });
-    // send json via ajax to save it 
+    // send json via ajax to save it
     $.ajax({
         url: '{{ route('accept-song') }}',
         type: "post",
@@ -149,6 +164,14 @@ $().ready(function(){
    current_song = null;
    debug = null;
 });
+
+
+$('textarea.expand').focus(function () {
+    $(this).animate({ height: "136px" }, 500);
+});
+$('textarea.expand').focusout(function () {
+    $(this).animate({ height: "34px" }, 500);
+});
 </script>
 
 <style>
@@ -180,6 +203,21 @@ $().ready(function(){
     }
     td.text-col {
         width:     20% !important;
+    }
+    textarea.expand {
+        height: 34px;
+    }
+
+    .modal-body .form-horizontal .col-sm-2,
+    .modal-body .form-horizontal .col-sm-10 {
+        width: 100%
+    }
+
+    .modal-body .form-horizontal .control-label {
+        text-align: left;
+    }
+    .modal-body .form-horizontal .col-sm-offset-2 {
+        margin-left: 15px;
     }
 </style>
     

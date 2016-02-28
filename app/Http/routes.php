@@ -20,9 +20,12 @@ Route::get('/phpinfo', function() { phpinfo(); });
 // Musics
 Route::get('/',               function(){ return redirect()->route('suggest'); });
 Route::get('/musics',         ['as' => 'musics',          'middleware' => 'auth', 'uses' => 'MusicController@index']);
+Route::get('/musics/{id}',    ['as' => 'musics.edit',          'middleware' => 'auth', 'uses' => 'MusicController@edit']);
+
 Route::get('/music/suggest',  ['as' => 'suggest',         'middleware' => 'auth', 'uses' => 'MusicController@suggest']);
 
 Route::post('/music/suggest', ['as' => 'save-suggestion', 'middleware' => 'auth', 'uses' => 'MusicController@store']);
+Route::post('/music/edit/{id}', ['as' => 'edit-suggestion', 'middleware' => 'auth', 'uses' => 'MusicController@update']);
 Route::post('/accept-song',   ['as' => 'accept-song',     'middleware' => 'auth', 'uses' => 'MusicController@accept_songs']);
 
 Route::get("/CreateDefaultCredential", function(){
