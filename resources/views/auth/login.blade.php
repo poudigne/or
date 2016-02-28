@@ -15,7 +15,7 @@
         <div class="col-sm-4 col-sm-offset-4">
             <form method="post">
                 <div class="form-group">
-                        <label for="email">Username</label>
+                        <label for="email">Email</label>
                         <input name="email" type="text" class="form-control" data-validation="required email" placeHolder="email"/>
                 </div>
                 <div class="form-group">
